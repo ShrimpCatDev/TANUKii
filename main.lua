@@ -1,8 +1,16 @@
 require("init")
 lg=love.graphics
 
-require("init")
-lg=love.graphics
+local lgc=love.graphics.circle
+function lg.circle(mode,x,y,r,...)
+    if mode=="fill" then
+        lgc("fill",x,y,r)
+        local w=lg.getLineWidth()
+        lg.setLineWidth(1)
+    end
+    lgc("line",x,y,r)
+    if w then lg.setLineWidth(w) end
+end
 
 local function exec(e,rom)
     local t=""
@@ -21,20 +29,31 @@ local function exec(e,rom)
 end
 
 function love.load()
+    theme={
+        bg={color="#b9b9b9ff"},
+        ui={color="#f0f0f0ff"}
+    }
     roms=require("roms")
     emu=require("emulators")
     love.window.setMode(1280,800,{resizable=true})
     
-    --os.execute('"')
-    exec("snes",roms[1].path)
+    --exec("snes",roms[1].path)
+
+    ui=plan.new()
+    require("widgets/profile")
 end
 
-function love.update()
-
+function love.update(dt)
+    ui:update(dt)
 end
 
 function love.draw()
-
+    lg.clear(color(theme.bg.color))
+    --[[lg.setColor(color(theme.ui.color))
+    lg.setLineWidth(4)
+    lg.rectangle("line",8,8,64,64,8,8)
+    lg.setLineWidth(1)]]
+    ui:draw()
 end
 
 function love.keypressed(k)
@@ -54,4 +73,8 @@ function love.keypressed(k)
             select=1
         end
     end]]
+end
+
+function love.resize(w,h)
+    ui:refresh()
 end

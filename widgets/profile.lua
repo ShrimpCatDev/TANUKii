@@ -18,9 +18,9 @@ end
 function panel:draw()
     self.r=self.h/2
     lg.push("all")
-    local r=color(theme.ui.color)
-    lg.setColor(r[1],r[2],r[3],0.2)
-    lg.rectangle("fill",self.x,self.y,self.w,self.h,self.r,self.r)
+    --local r=color(theme.ui.color)
+    --lg.setColor(r[1],r[2],r[3],0.2)
+    --lg.rectangle("fill",self.x,self.y,self.w,self.h,self.r,self.r)
     lg.setColor(color(theme.ui.color))
     lg.setLineWidth(4)
     lg.rectangle("line",self.x,self.y,self.w,self.h,self.r,self.r)

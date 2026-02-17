@@ -72,6 +72,7 @@ function love.load()
     ui=plan.new()
     require("widgets/profile")
     require("widgets/stats")
+    require("widgets/gameGrid")
 
     effect = moonshine(moonshine.effects.boxblur)
     local w,h=love.window.getMode()

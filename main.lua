@@ -2,7 +2,7 @@ require("init")
 lg=love.graphics
 
 local lgc=love.graphics.circle
-function lg.circle(mode,x,y,r,...)
+--[[function lg.circle(mode,x,y,r,...)
     if mode=="fill" then
         lgc("fill",x,y,r)
         local w=lg.getLineWidth()
@@ -20,7 +20,7 @@ function lg.rectangle(mode,x,y,...)
     end
     lgr("line",x,y,...)
     if w then lg.setLineWidth(w) end
-end
+end]]
 
 local function exec(e,rom)
     local t=""
@@ -38,6 +38,18 @@ local function exec(e,rom)
     os.execute(t)
 end
 
+cache={
+    font={}
+}
+
+function loadFont(size)
+    local fs=math.floor(size)
+    if not cache.font[fs] then
+        cache.font[fs]=lg.newFont("assets/contb.ttf",fs)
+    end
+    return cache.font[fs]
+end
+
 function love.load()
     theme={
         bg={color="#b9b9b9ff"},
@@ -52,7 +64,14 @@ function love.load()
 
     ui=plan.new()
     require("widgets/profile")
+    require("widgets/stats")
+
     effect = moonshine(moonshine.effects.boxblur)
+    local w,h=love.window.getMode()
+    canvas=lg.newCanvas(w,h)
+    local music=love.audio.newSource("assets/dsi.mp3","stream")
+    music:setLooping(true)
+    music:play()
 end
 
 function love.update(dt)
@@ -60,21 +79,23 @@ function love.update(dt)
 end
 
 function love.draw()
-    
+    lg.setCanvas(canvas)
+        lg.clear()
+    lg.setCanvas()
     
     effect(function() 
         lg.clear(color(theme.bg.color))
         local c=color(theme.bg2.color)
         local ww,hh=love.window.getMode()
-        local gridSize = ww/12
+        local gridSize = ww/10
 
         local w=gridSize-(gridSize/4)
 
-        local offsetX = math.fmod(love.timer.getTime()*w/6,gridSize)
-        local offsetY = math.fmod(love.timer.getTime()*w/6,gridSize)
+        local offsetX = math.fmod(love.timer.getTime()*w/8,gridSize)
+        local offsetY = math.fmod(love.timer.getTime()*w/8,gridSize)
 
-        local offsetX2 = math.fmod(love.timer.getTime()*w/4,gridSize)
-        local offsetY2 = math.fmod((love.timer.getTime()*w/4)+8,gridSize)
+        local offsetX2 = math.fmod(love.timer.getTime()*w/6,gridSize)
+        local offsetY2 = math.fmod((love.timer.getTime()*w/6)+8,gridSize)
 
         for x = -gridSize, lg.getWidth() + gridSize, gridSize do
             for y = -gridSize, lg.getHeight() + gridSize, gridSize do
@@ -90,6 +111,12 @@ function love.draw()
     lg.rectangle("line",8,8,64,64,8,8)
     lg.setLineWidth(1)]]
     ui:draw()
+
+    lg.setColor(0,0,0,0.2)
+    lg.draw(canvas,3,3)
+
+    lg.setColor(1,1,1,1)
+    lg.draw(canvas)
 end
 
 function love.keypressed(k)
@@ -117,4 +144,5 @@ end
 function love.resize(w,h)
     ui:refresh()
     effect.resize(w,h)
+    canvas=lg.newCanvas(w,h)
 end

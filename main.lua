@@ -52,9 +52,16 @@ end
 
 function love.load()
     theme={
-        bg={color="#b9b9b9ff"},
+        bg={color="#63e3faff"},
+        bgg={color="#4fb175ff"},
+        bg2={color="#cfdbe7ff"},
+        ui={color="#e1f2fdff"}
+        
+        --[[bg={color="#b9b9b9ff"},
+        bgg={color="#969696ff"},
         bg2={color="#dfdfdfff"},
-        ui={color="#4e4e4eff"}
+        ui={color="#4e4e4eff"}]]
+        
     }
     roms=require("roms")
     emu=require("emulators")
@@ -78,15 +85,55 @@ function love.update(dt)
     ui:update(dt)
 end
 
+
+--yoinked from the love2d wiki
+
+function gradient(colors)
+    local direction = colors.direction or "horizontal"
+    if direction == "horizontal" then
+        direction = true
+    elseif direction == "vertical" then
+        direction = false
+    else
+        error("Invalid direction '" .. tostring(direction) .. "' for gradient.  Horizontal or vertical expected.")
+    end
+    local result = love.image.newImageData(direction and 1 or #colors, direction and #colors or 1)
+    for i, color in ipairs(colors) do
+        local x, y
+        if direction then
+            x, y = 0, i - 1
+        else
+            x, y = i - 1, 0
+        end
+        result:setPixel(x, y, color[1], color[2], color[3], color[4] or 255)
+    end
+    result = love.graphics.newImage(result)
+    result:setFilter('linear', 'linear')
+    return result
+end
+function drawinrect(img, x, y, w, h, r, ox, oy, kx, ky)
+    return -- tail call for a little extra bit of efficiency
+    love.graphics.draw(img, x, y, r, w / img:getWidth(), h / img:getHeight(), ox, oy, kx, ky)
+end
+
 function love.draw()
     lg.setCanvas(canvas)
-        lg.clear()
+        local c=color(theme.ui.color)
+        lg.clear(c[1],c[2],c[3],0)
     lg.setCanvas()
     
     effect(function() 
-        lg.clear(color(theme.bg.color))
-        local c=color(theme.bg2.color)
         local ww,hh=love.window.getMode()
+        lg.clear(color(theme.bg.color))
+
+        local c=color(theme.bgg.color)
+        local g=gradient({{0,0,0,0},c,c,direction="horizontal"})
+
+        local s=4
+        drawinrect(g, 0, -hh*1.2, ww, hh*s)
+
+        lg.setColor(1,1,1,1)
+        local c=color(theme.bg2.color)
         local gridSize = ww/10
 
         local w=gridSize-(gridSize/4)
@@ -113,7 +160,7 @@ function love.draw()
     ui:draw()
 
     lg.setColor(0,0,0,0.2)
-    lg.draw(canvas,3,3)
+    lg.draw(canvas,4,4)
 
     lg.setColor(1,1,1,1)
     lg.draw(canvas)

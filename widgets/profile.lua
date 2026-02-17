@@ -29,7 +29,6 @@ function panel:draw()
         lg.circle("fill",self.x+self.w-(self.h/2),self.y+(self.h/2),(self.h/2)-2)
     lg.setColor(1,1,1,1)
     self.super.draw(self)
-    print("works")
     lg.pop()
 end
 
